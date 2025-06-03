@@ -31,7 +31,7 @@ def create_lead(telegram_id, username, message_text):
                 "Last_Name": f"Telegram {telegram_id}",
                 "Company": "Telegram Inquiry",
                 "Lead_Source": "Telegram",
-                "Telegram_ID": int(telegram_id),
+                "Telegram": str(telegram_id),
                 "Telegram_username": username,
                 "Telegram_message": message_text,
                 "Telegram_status": "Новый"
