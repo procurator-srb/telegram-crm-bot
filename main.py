@@ -4,14 +4,26 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-ACCESS_TOKEN = "1000.a4c362733420519e35a98cb73d2e7311.bebdb3f7b0ede6511006a929a1c89130"
 API_DOMAIN = "https://www.zohoapis.eu"
-HEADERS = {
-    "Authorization": f"Zoho-oauthtoken {ACCESS_TOKEN}"
-}
+
+def get_access_token():
+    url = "https://accounts.zoho.eu/oauth/v2/token"
+    data = {
+        "refresh_token": os.environ.get("ZOHO_REFRESH_TOKEN"),
+        "client_id": os.environ.get("ZOHO_CLIENT_ID"),
+        "client_secret": os.environ.get("ZOHO_CLIENT_SECRET"),
+        "grant_type": "refresh_token"
+    }
+    response = requests.post(url, data=data)
+    response.raise_for_status()
+    return response.json()["access_token"]
 
 def create_lead(from_user, message_text):
+    access_token = get_access_token()
     url = f"{API_DOMAIN}/crm/v2/Leads"
+    headers = {
+        "Authorization": f"Zoho-oauthtoken {access_token}"
+    }
     data = {
         "data": [{
             "Last_Name": f"Telegram {from_user}",
@@ -19,7 +31,7 @@ def create_lead(from_user, message_text):
             "Description": message_text
         }]
     }
-    response = requests.post(url, json=data, headers=HEADERS)
+    response = requests.post(url, json=data, headers=headers)
     print("ZOHO RESPONSE:", response.status_code, response.text)
 
 @app.route("/", methods=["POST"])
@@ -35,5 +47,6 @@ def telegram_webhook():
 @app.route("/", methods=["GET"])
 def index():
     return "Бот работает!"
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
