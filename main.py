@@ -19,7 +19,7 @@ def get_access_token():
     return response.json()["access_token"]
 
 def create_lead(telegram_id, username, message_text):
-    access_token = get_zoho_access_token()
+
     url = "https://www.zohoapis.eu/crm/v2/Leads"
     headers = {
         "Authorization": f"Zoho-oauthtoken {access_token}"
@@ -47,9 +47,10 @@ def telegram_webhook():
     data = request.get_json()
     if "message" in data:
         msg = data["message"]
-        user = msg.get("from", {}).get("username", "Unknown")
+        from_id = msg["from"]["id"]
+        username = msg["from"].get("username", "Unknown")
         text = msg.get("text", "")
-        create_lead(user, text)
+        create_lead(from_id, username, text)
     return jsonify({"status": "received"})
 
 @app.route("/", methods=["GET"])
