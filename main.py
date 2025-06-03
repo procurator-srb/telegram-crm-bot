@@ -19,7 +19,7 @@ def get_access_token():
     return response.json()["access_token"]
 
 def create_lead(telegram_id, username, message_text):
-
+    access_token = get_zoho_access_token()
     url = "https://www.zohoapis.eu/crm/v2/Leads"
     headers = {
         "Authorization": f"Zoho-oauthtoken {access_token}"
@@ -38,6 +38,10 @@ def create_lead(telegram_id, username, message_text):
             }
         ]
     }
+
+    response = requests.post(url, json=data, headers=headers)
+    print("ZOHO RESPONSE:", response.status_code, response.text)
+
 
     response = requests.post(url, json=data, headers=headers)
     print("ZOHO RESPONSE:", response.status_code, response.text)
