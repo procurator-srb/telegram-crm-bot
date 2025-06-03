@@ -58,7 +58,7 @@ def telegram_webhook():
     return jsonify({"status": "received"})
 
 @app.route("/", methods=["GET"])
-def index():
+# def index():
     return "Бот работает!"
 
 if __name__ == "__main__":
